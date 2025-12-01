@@ -71,14 +71,14 @@ Setup Instructions
 Directory Structure
 
 /wip/          # Root directory (will prompt)
-com/           # Community Rice pack (flat, hash-named PNGs)
-glide/         # Reloaded Rice pack (flat, hash-named PNGs)
-ng/            # Reloaded o2r pack (hierarchical, descriptive PNGs)
+/com           # Community Rice pack (flat, hash-named PNGs)
+/glide         # Reloaded Rice pack (flat, hash-named PNGs)
+/ng            # Reloaded o2r pack (hierarchical, descriptive PNGs)
 
 Output Directories (Created Automatically)
 
-glideout/      # Matched Reloaded Rice textures
-comout/        # Converted community textures in o2r format
+/glideout      # Matched Reloaded Rice textures
+/comout        # Converted community textures in o2r format
 
 Recommended Start
 
