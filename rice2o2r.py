@@ -1,4 +1,14 @@
 #!/usr/bin/env python3
+
+# Reference: Glide = Ocarina Reloaded for Gliden64 PNG pack, NG = Ocarina Reloaded for SoH PNG pack, COM = Community Pack PNG
+# Script currently assumes locations, script will need to be modified. Current directory structure: (linux) : 
+#~/wip - Base directory
+# ~/wip/glide - Ocarina Reloaded for Gliden64 PNG pack, all images extracted to root directory, no subdirectory structure
+#~/wip/ng - Ocarina Reloaded for SoH PNG pack as is, required structure archetype 
+#~/wip/com - Community Pack PNG, all images extracted to root directory, no subdirectory structure
+#~/wip/glideout - Script will match filenames in COM with Glide, any matches with glide will be moved from glide to glide out.
+#~/wip/comout - Script will move any matched COM file to this folder following the structure of ng for packing as an o2r using tool Retro v0.2.0 by http://www.github.com/harbourmaster
+
 # dependency check
 missing = []
 
