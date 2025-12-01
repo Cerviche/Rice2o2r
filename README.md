@@ -1,0 +1,189 @@
+Texture Conversion Pipeline: Rice (Glide) → NG Format for SoH
+Project Description
+
+This pipeline automates the conversion of Ocarina of Time community texture packs from the legacy Rice/Glide format to the modern o2r format used by Ship of Harkinian (SoH).
+The Texture Formats
+1. Rice/Glide Format (Legacy)
+
+    Used by: Mupen64Plus, Project64 with GlideN64 plugin
+
+    Naming: Texture hash-based filenames (e.g., THE_LEGEND_OF_ZELDA#92C1F51C#4#1_rgb.png)
+
+    Purpose: Matches textures in N64 game RAM via hash lookup
+
+    Structure: Flat directory, no organization
+
+2. o2r (NextGen) Format (Modern)
+
+    Used by: Ship of Harkinian (SoH)
+
+    Naming: Descriptive, organized names (e.g., objects/gameplay_keep/gEffBombExplosion1Tex.png)
+
+    Purpose: Direct filepath-based loading
+
+    Structure: Hierarchical directories mirroring game assets
+
+3. Ocarina Reloaded Bridge
+
+    Reloaded Glide Pack: Rice format textures from Ocarina Reloaded project
+
+    Reloaded NG Pack: Same textures in NG format from same project
+
+    Key Insight: Since both packs contain the same textures with different naming schemes, we can use them as a translation dictionary.
+
+The Conversion Challenge
+
+Community Texture Packs (like Hyrule Field HD, Character packs) exist only in Rice format. To use them with SoH, we need to:
+
+    Match Rice-format community textures to Rice-format Reloaded textures (by filename hash)
+
+    Find the corresponding NG-format texture in the Reloaded NG pack (by content matching)
+
+    Convert community textures to NG format with proper directory structure
+
+Pipeline Architecture
+text
+
+┌─────────────────┐    ┌──────────────────┐    ┌─────────────────┐
+│  Community      │    │  Reloaded        │    │  Reloaded       │
+│  Rice Pack      │    │  Rice Pack       │    │  NG Pack        │
+│  (COM)          │    │  (Glide)         │    │  (o2r/NG)       │
+│                 │    │                  │    │                 │
+│ • Hash-based    │    │ • Hash-based     │    │ • Organized     │
+│   filenames     │    │   filenames      │    │   directories   │
+│ • Flat structure│    │ • Flat structure │    │ • Descriptive   │
+│ • ~4,400 files  │    │ • ~45,000 files  │    │   names         │
+└────────┬────────┘    └────────┬─────────┘    └────────┬────────┘
+         │                       │                       │
+         │ 1. Filename Match     │                       │
+         └───────────────────────┘                       │
+                                    2. Content Match     │
+                                    (Perceptual Hash)    │
+                                    └────────────────────┘
+                                               │
+                                               ▼
+                                    ┌──────────────────┐
+                                    │  Translation     │
+                                    │  Dictionary      │
+                                    │                  │
+                                    │ • COM_filename → │
+                                    │   NG_path        │
+                                    └────────┬─────────┘
+                                             │
+                                             │ 3. Convert
+                                             ▼
+                                    ┌──────────────────┐
+                                    │  Converted       │
+                                    │  Community Pack  │
+                                    │                  │
+                                    │ • NG format      │
+                                    │ • SoH compatible │
+                                    │ • ~2,300+ files  │
+                                    └──────────────────┘
+
+Technical Implementation
+Stage 1: Hash-to-Hash Matching
+python
+
+# Community Rice: "THE_LEGEND_OF_ZELDA#92C1F51C#4#1_rgb.png"
+# Reloaded Rice:  "THE_LEGEND_OF_ZELDA#92C1F51C#4#1_rgb.png"  # Exact match!
+# Result: Copy matching Reloaded Rice file to working directory
+
+Stage 2: Rice-to-NG Content Matching
+python
+
+# Reloaded Rice: "THE_LEGEND_OF_ZELDA#92C1F51C#4#1_rgb.png"
+# Calculate perceptual hash → "a1b2c3d4e5f6..."
+# Find matching hash in Reloaded NG pack
+# Reloaded NG: "objects/gameplay_keep/gEffBombExplosion1Tex.png" → same hash!
+# Build mapping: COM_hash_filename → NG_descriptive_path
+
+Stage 3: Community Conversion
+python
+
+# Community Rice: "THE_LEGEND_OF_ZELDA#92C1F51C#4#1_rgb.png"
+# Lookup in mapping → "objects/gameplay_keep/gEffBombExplosion1Tex.png"
+# Copy to: comout/objects/gameplay_keep/gEffBombExplosion1Tex.png
+
+Why Perceptual Hashing?
+
+Since we can't directly match Rice format (hash-based names) to NG format (descriptive names), we use perceptual hashing:
+
+    pHashing Algorithm: Creates a 64-bit fingerprint of visual content
+
+    Content Matching: Finds identical textures regardless of filename
+
+    Hamming Distance: Measures similarity (0=identical, 1-2=very similar, 3+=similar)
+
+Setup Instructions
+bash
+
+# Directory structure
+~/com/          # Community Rice pack (flat, hash-named PNGs)
+~/glide/        # Reloaded Rice pack (flat, hash-named PNGs)  
+~/ng/           # Reloaded NG pack (hierarchical, descriptive PNGs)
+
+# Output directories (created automatically)
+~/glideout/     # Matched Reloaded Rice textures
+~/comout/       # Converted community textures in NG format
+
+Usage
+bash
+
+# Recommended starting point
+python texture_converter_hamming2.py
+
+# More aggressive matching (test thoroughly)
+python texture_converter_hamming3.py
+
+Performance Metrics
+
+    Match Rate: ~53% (2329/4400 textures) at Hamming distance 2
+
+    Processing Time: ~30 seconds for 45,000+ textures
+
+    Accuracy: High quality matches with minimal errors at Hamming ≤2
+
+Use Cases
+
+    Texture Pack Porting: Convert existing Rice-format community packs to SoH
+
+    Hybrid Packs: Combine multiple community packs in NG format
+
+    Legacy Preservation: Make old texture packs compatible with modern emulators
+
+    Quality Assurance: Verify texture matches between format conversions
+
+Limitations & Considerations
+
+    Partial Coverage: Not all community textures have matches in Reloaded pack
+
+    Hash Collisions: Rare cases where different textures have similar hashes
+
+    Manual Review Needed: For Hamming distance >2 matches
+
+    Texture Updates: Requires re-running when new packs are released
+
+Collaboration Notes
+
+This pipeline enables the OoT modding community to:
+
+    Share texture packs across different emulator/port ecosystems
+
+    Preserve years of community texture work
+
+    Standardize on the modern NG format while maintaining compatibility
+
+    Automate what would otherwise be thousands of hours of manual work
+
+Credits
+
+    Ocarina Reloaded Team: For providing both Rice and NG format packs
+
+    Ship of Harkinian Team: For the NG format specification
+
+    GlideN64 Developers: For the Rice format specification
+
+    Community Texture Artists: For the original texture packs
+
+This pipeline represents a bridge between emulator generations, ensuring that years of community texture work remain accessible as the Ocarina of Time modding ecosystem evolves.
