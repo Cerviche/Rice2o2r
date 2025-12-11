@@ -1,4 +1,5 @@
-Texture Conversion Pipeline: Rice (Glide) → o2r (NextGen) Format for SoH
+#Texture Conversion Pipeline: Rice (Glide) → o2r (NextGen) Format for SoH
+
 Project Description
 
 This pipeline automates the conversion of Ocarina of Time community texture packs from the legacy Rice/Glide format to the modern o2r format used by Ship of Harkinian (SoH). The system uses perceptual hashing to match textures by content, allowing conversion even when filenames differ between texture packs.
