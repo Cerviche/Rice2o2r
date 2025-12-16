@@ -308,7 +308,7 @@ def find_matches(engine, glide_paths, glide_arrays, glide_alpha,
         dup_count = len(match_list)
         for match in match_list:
             match['duplicate_count'] = dup_count
-            match['soh_all_paths'] = '|'.join(m['glide_filename'] for m in match_list)
+            match['soh_all_paths'] = '|'.join(m['soh_primary_path'] for m in match_list)
 
         if dup_count > 1:
             stats['duplicate_sets'] = stats.get('duplicate_sets', 0) + 1
